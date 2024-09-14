@@ -1,101 +1,81 @@
-import Image from "next/image";
+"use client";
+import EntryForm from "@/components/EntryForm";
+import SpendingLimit from "@/components/SpendingLimit";
+import Summary from "@/components/Summary";
+import { useEffect, useState } from "react";
 
-export default function Home() {
+interface Expense {
+  name: string;
+  desc: string;
+  amount: number;
+  time: string; // Time in "HH:MM" format
+  date: string; // Date in "MM-DD-YYYY" format
+}
+function Home() {
+  const [data, setData] = useState<Expense[]>([]);
+  const [totalAmount, setTotalAmount] = useState<number>(0);
+  const [income, setIncome] = useState(0);
+
+  useEffect(() => {
+    // Check if localStorage is available
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("expenses");
+      if (saved) {
+        const parsedData: Expense[] = JSON.parse(saved) || [];
+        setData(parsedData);
+
+        // Calculate total amount from saved data
+        const total = parsedData.reduce(
+          (acc, expense) => acc + expense.amount,
+          0
+        );
+        setTotalAmount(total);
+      }
+
+      const savedData = localStorage.getItem("income");
+      if (savedData) {
+        setIncome(JSON.parse(savedData) || 0);
+      }
+    }
+  }, []);
+
+  // Handle form submission
+  const handleFormSubmit = (newData: Expense[]) => {
+    setData(newData);
+    localStorage.setItem("expenses", JSON.stringify(newData));
+  };
+  // Handle income submission
+  const handleIncomeSubmit = (newIncome: any) => {
+    setIncome(newIncome);
+    localStorage.setItem("income", JSON.stringify(newIncome));
+  };
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+    <main className="bg-[#013B94] text-white min-h-screen">
+      {/* heading */}
+      <section className="max-w-7xl mx-auto p-6">
+        <h2 className="font-bold text-5xl">Track Your Expenses</h2>
+        <h3 className="py-5 text-4xl">Spend Wisely</h3>
+      </section>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
+      <section className="max-w-7xl mx-auto p-2">
+        <div className="flex flex-row">
+          {/* form */}
+          <div className="basis-2/5">
+            <EntryForm
+              onSubmit={handleFormSubmit}
+              onSubmitIncome={handleIncomeSubmit}
+              incomeData={income}
             />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+          </div>
+          {/* summary */}
+          <div className="basis-3/5">
+            <Summary data={data} />
+            <SpendingLimit income={income} totalAmount={totalAmount} />
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+      </section>
+    </main>
   );
 }
+
+export default Home;
