@@ -3,7 +3,7 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 ## Getting Started
 
 First, run the development server:
-# additional information (I'm using node version 20.15.1)
+### additional information (I'm using node version 20.15.1)
 ```bash
 npm run dev
 # or
@@ -37,7 +37,7 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
 
 ## Project Detail
 
-# Project React: Expense Tracker Application
+### Project React: Expense Tracker Application
 Main Features:
 1. A form to add expenses (name, category, amount, date).
 2. A list of expenses that can be edited or deleted.
